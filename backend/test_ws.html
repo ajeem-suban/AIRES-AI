@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AIRES WebSocket Test</title>
+</head>
+<body>
+
+<h2>🚑 AIRES Live Tracking</h2>
+
+<pre id="output"></pre>
+
+<script>
+
+const output = document.getElementById("output");
+
+const socket = new WebSocket("ws://127.0.0.1:8000/ws/tracking");
+
+socket.onmessage = (event)=>{
+    output.textContent = event.data;
+};
+
+socket.onopen = ()=>{
+    console.log("Connected");
+};
+
+socket.onclose = ()=>{
+    console.log("Disconnected");
+};
+
+</script>
+
+</body>
+</html>

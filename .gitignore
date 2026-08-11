@@ -1,0 +1,132 @@
+# ==========================================
+# AIRES - Git Ignore
+# ==========================================
+
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+backend/venv/
+backend/.venv/
+
+# Python packaging
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# -----------------------------
+# Environment / Secrets
+# -----------------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------------
+# FastAPI / Uvicorn
+# -----------------------------
+*.log
+
+# -----------------------------
+# Databases
+# -----------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+# -----------------------------
+# Jupyter
+# -----------------------------
+.ipynb_checkpoints/
+
+# -----------------------------
+# Node / React / Vite
+# -----------------------------
+node_modules/
+frontend/node_modules/
+
+# Vite build output
+dist/
+frontend/dist/
+
+# Vite cache
+.vite/
+frontend/.vite/
+
+# -----------------------------
+# npm / yarn / pnpm
+# -----------------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -----------------------------
+# OS files
+# -----------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -----------------------------
+# IDE / Editors
+# -----------------------------
+.vscode/
+.idea/
+
+# VS Code local history
+.history/
+
+# -----------------------------
+# Temporary files
+# -----------------------------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# -----------------------------
+# AI / ML generated files
+# -----------------------------
+models/
+checkpoints/
+weights/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# -----------------------------
+# Large datasets
+# -----------------------------
+*.csv
+*.parquet
+*.zip
+
+# Keep dataset structure if needed
+# but don't upload large/raw datasets
+
+# -----------------------------
+# Coverage / Testing
+# -----------------------------
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# -----------------------------
+# Misc
+# -----------------------------
+.DS_Store

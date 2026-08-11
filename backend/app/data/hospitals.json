@@ -1,0 +1,38 @@
+[
+  {
+    "id": "HOSP001",
+    "name": "Dhanalakshmi Srinivasan Medical College",
+    "latitude": 10.7920,
+    "longitude": 78.7060,
+    "beds_available": 18,
+    "icu_available": true,
+    "specialties": [
+      "Cardiology",
+      "Trauma",
+      "Emergency"
+    ]
+  },
+  {
+    "id": "HOSP002",
+    "name": "ABC Multispeciality Hospital",
+    "latitude": 10.8015,
+    "longitude": 78.7152,
+    "beds_available": 5,
+    "icu_available": true,
+    "specialties": [
+      "Neurology",
+      "Emergency"
+    ]
+  },
+  {
+    "id": "HOSP003",
+    "name": "City General Hospital",
+    "latitude": 10.7800,
+    "longitude": 78.6980,
+    "beds_available": 30,
+    "icu_available": false,
+    "specialties": [
+      "General Medicine"
+    ]
+  }
+]

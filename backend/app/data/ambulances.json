@@ -1,0 +1,23 @@
+[
+  {
+    "id": "AMB001",
+    "driver": "Arun Kumar",
+    "status": "Available",
+    "latitude": 10.7900,
+    "longitude": 78.7040
+  },
+  {
+    "id": "AMB002",
+    "driver": "Ravi",
+    "status": "Available",
+    "latitude": 10.7825,
+    "longitude": 78.6995
+  },
+  {
+    "id": "AMB003",
+    "driver": "Karthik",
+    "status": "Busy",
+    "latitude": 10.8010,
+    "longitude": 78.7150
+  }
+]
