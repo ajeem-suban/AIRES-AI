@@ -23,7 +23,28 @@ def recommend_hospital(patient_lat: float, patient_lon: float, emergency_type: s
         best_hospital = None
         best_score = float("-inf")
 
-        for hospital in hospital_list:
+        # Only consider hospitals that can actually take this patient:
+        # a free bed AND a matching specialty (case-insensitive).
+        wanted = emergency_type.strip().lower()
+        candidates = [
+            h for h in hospital_list
+            if h.beds_available > 0
+            and wanted in [s.lower() for s in h.specialties]
+        ]
+        # Fallback 1: general emergency hospitals with a free bed
+        if not candidates:
+            candidates = [
+                h for h in hospital_list
+                if h.beds_available > 0
+                and "emergency" in [s.lower() for s in h.specialties]
+            ]
+        # Fallback 2: any hospital with a free bed
+        if not candidates:
+            candidates = [h for h in hospital_list if h.beds_available > 0]
+        if not candidates:
+            return {"error": "No hospital has a free bed."}
+
+        for hospital in candidates:
 
             distance = calculate_distance(
                 patient_lat,
@@ -35,7 +56,7 @@ def recommend_hospital(patient_lat: float, patient_lon: float, emergency_type: s
             score = 0
 
             # Beds
-            score += hospital.beds_available * 2
+            score += min(hospital.beds_available, 10) * 2  # cap: big hospitals must not win on beds alone
 
             # ICU
             if hospital.icu_available:
@@ -48,7 +69,7 @@ def recommend_hospital(patient_lat: float, patient_lon: float, emergency_type: s
                 score += 20
 
             # Distance penalty
-            score -= distance * 100
+            score -= distance * 111 * 5  # 5 points per km (degrees -> km)
 
             print(f"{hospital.name} -> Score: {score}")
 
