@@ -99,7 +99,7 @@ desktop.ini
 # -----------------------------
 # AI / ML generated files
 # -----------------------------
-models/
+/models/
 checkpoints/
 weights/
 *.pt
