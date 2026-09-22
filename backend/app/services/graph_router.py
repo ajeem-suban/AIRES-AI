@@ -121,6 +121,8 @@ def _eta_without_rerouting(path, dst):
             known.add(k)
             t += DETOUR_PENALTY_MIN
             _, plan = _shortest(u, dst, live=False, avoid=known)
+            if not plan:                       # no way through: cannot arrive
+                return math.inf
             i = 0
             continue
         t += _minutes(k, live=True)
@@ -152,9 +154,9 @@ def route_status():
     old_min = _eta_without_rerouting(planned, dst)     # if nobody re-routed
 
     hit = [EVENTS[_key(a, b)] for a, b in zip(planned, planned[1:])
-           if _key(a, b) in EVENTS]
+        if _key(a, b) in EVENTS]
     hit_roads = [EDGES[_key(a, b)]["road"] for a, b in zip(planned, planned[1:])
-                 if _key(a, b) in EVENTS]
+        if _key(a, b) in EVENTS]
     if not hit:
         traffic, event, desc = "Light", "Clear", "Road is clear."
     else:
@@ -162,7 +164,10 @@ def route_status():
         traffic = "Heavy" if worst in BLOCKING else "Moderate"
         event = worst
         desc = f"{worst} detected on {hit_roads[hit.index(worst)]}."
-    old_eta, new_eta = round(old_min), round(new_min)
+        if math.isinf(new_min) or math.isinf(old_min):
+            old_eta = new_eta = 0            # no route found: avoid crash on round(inf)
+        else:
+            old_eta, new_eta = round(old_min), round(new_min)
     return {
         "current_route": _describe(planned),
         "recommended_route": _describe(best),

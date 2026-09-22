@@ -126,6 +126,8 @@ htmlcov/
 .tox/
 .nox/
 
+simulation/results/*.graphml
+
 # -----------------------------
 # Misc
 # -----------------------------
