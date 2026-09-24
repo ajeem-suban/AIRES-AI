@@ -106,7 +106,7 @@ weights/
 *.pth
 *.ckpt
 *.safetensors
-
+*.pbf
 # -----------------------------
 # Large datasets
 # -----------------------------

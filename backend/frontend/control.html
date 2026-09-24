@@ -1,0 +1,33 @@
+<!doctype html><html><head><title>AIRES Control</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="css/style.css"></head><body>
+<header><b>AIRES</b><span>TEST CONTROL PANEL (presenter only)</span><span id="conn" class="pill">CONNECTING</span></header>
+<div class="hub" style="margin-top:3vh">
+ <div class="g2"><div class="card"><div class="k">Trip length</div><select id="trip" onchange="setTrip()"><option>Auto</option><option>Short</option><option>Medium</option><option>Long</option></select></div><div class="card"><div class="k">Where on route</div><select id="pos"><option>random</option><option>early</option><option>middle</option><option>late</option></select></div></div>
+ <div class="card"><div class="k">Road (optional, must be on the ambulance route)</div><select id="road"></select></div>
+ <div class="btns"><button class="ev" onclick="fire('Accident')">🚧 ACCIDENT<br><small>closes road</small></button><button class="ev" onclick="fire('Flood')">🌊 FLOOD<br><small>closes road</small></button>
+  <button class="ev" onclick="fire('Traffic Jam')">🚗 TRAFFIC JAM<br><small>slows road</small></button><button class="ev" onclick="fire('Construction')">🏗 CONSTRUCTION<br><small>slows road</small></button></div>
+ <div class="btns"><button class="ev" onclick="call('/routing/start','POST','Ambulance dispatched')">🚑 START TRIP</button><button class="ev" onclick="call('/routing/reset','POST','Ambulance back at start')">↺ RESET</button></div>
+ <button class="clr" onclick="clr()">✔ CLEAR ALL EVENTS</button>
+ <div class="card"><div class="k">Live status</div><div id="st">Waiting...</div></div>
+ <div class="card"><div class="k">Actions</div><ul id="log"></ul></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script><script src="js/common.js"></script>
+<script>
+$('road').innerHTML = '<option value="">Auto (on the ambulance route)</option>';
+const acts = [];
+function say(t) { acts.unshift(new Date().toLocaleTimeString() + ' ' + t); $('log').innerHTML = acts.slice(0, 6).map(x => '<li>' + x + '</li>').join(''); }
+async function call(url, method, label) {
+  try { const r = await fetch(API + url, {method}); const j = await r.json();
+    say(r.ok ? '✔ ' + label + (j.road ? ' on ' + j.road : '') : '✖ ' + (j.detail || r.status)); }
+  catch (e) { say('✖ Backend unreachable'); }
+}
+function fire(t) { const r = $('road').value;
+  call('/routing/event?event_type=' + encodeURIComponent(t) + '&position=' + $('pos').value + (r ? '&road_name=' + encodeURIComponent(r) : ''), 'POST', t); }
+function setTrip() { call('/routing/trip?name=' + $('trip').value, 'POST', 'Trip: ' + $('trip').value); }
+function clr() { call('/routing/events', 'DELETE', 'Cleared all events'); }
+live(d => { $('st').innerHTML = hasEv(d)
+  ? '<b>' + d.event_description + '</b><br>' + (d.rerouted ? 'Rerouted via ' + d.recommended_route + ' · saves ' + d.time_saved + ' min' : 'No better route') + '<br>ETA ' + d.new_eta + ' min (delay +' + delayOf(d) + ')'
+  : 'Route clear · ETA ' + d.new_eta + ' min'; });
+</script></body></html>

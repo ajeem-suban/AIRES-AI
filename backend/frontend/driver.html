@@ -1,0 +1,28 @@
+<!doctype html><html><head><title>AIRES Driver</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="css/style.css"></head><body>
+<header><b>AIRES</b><span>DRIVER SCREEN · AMB-01</span><span id="conn" class="pill">CONNECTING</span></header>
+<div class="wrap"><div class="side">
+ <div id="alert" class="card alert ok"><div class="k">Incident</div><div class="big" id="atitle">ROUTE CLEAR</div><div id="adesc">Waiting for data...</div></div>
+ <div class="g2"><div class="card"><div class="k">Time delay</div><div class="num" id="delay">0 min</div><div class="dim" id="saved">-</div></div>
+ <div class="card"><div class="k">ETA to hospital</div><div class="num" id="eta">-</div></div></div>
+ <div class="card"><div class="k">Reroute</div><div class="big" id="rr">ON PLAN</div><div id="route">-</div></div>
+ <div class="card" id="pt"></div>
+</div><div id="map"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script><script src="js/common.js"></script>
+<script>
+$('pt').innerHTML = patientHTML();
+const draw = mkMap();
+live(d => {
+  draw(d); const ev = hasEv(d);
+  $('alert').className = 'card alert' + (ev ? '' : ' ok');
+  $('atitle').textContent = ev ? '⚠ ' + d.road_event.toUpperCase() + ' AHEAD' : 'ROUTE CLEAR';
+  $('adesc').textContent = d.event_description;
+  $('rr').textContent = d.rerouted ? 'REROUTED' : (ev ? 'NO BETTER ROUTE' : 'ON PLAN');
+  $('route').textContent = d.recommended_route + ' · ' + d.distance_km + ' km' + (d.hospital ? ' → ' + d.hospital : '');
+  $('delay').textContent = '+' + (ev ? delayOf(d) : 0) + ' min';
+  $('saved').textContent = d.rerouted ? 'AIRES saved ' + d.time_saved + ' min' : '-';
+  $('eta').textContent = d.arrived ? 'ARRIVED' : d.new_eta + ' min';
+});
+</script></body></html>

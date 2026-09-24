@@ -1,9 +1,9 @@
 import asyncio
 
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
+from app.services.live import hub
 from app.services.routing_service import routing_service
-
 router = APIRouter()
 
 
@@ -14,11 +14,21 @@ async def routing_socket(
 ):
 
     await websocket.accept()
+    changed = hub.subscribe()
 
-    while True:
+    try:
+        while True:
+            route = routing_service.get_route_status(ambulance_id)
+            await websocket.send_json(route.model_dump())
 
-        route = routing_service.get_route_status(ambulance_id)
-
-        await websocket.send_json(route.model_dump())
-
-        await asyncio.sleep(5)
+            # Wake up instantly when an event is injected or cleared;
+            # otherwise refresh every 5 seconds as before.
+            try:
+                await asyncio.wait_for(changed.wait(), timeout=5)
+            except asyncio.TimeoutError:
+                pass
+            changed.clear()
+    except WebSocketDisconnect:
+        pass
+    finally:
+        hub.unsubscribe(changed)  # no leftover listeners after a client leaves

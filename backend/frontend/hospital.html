@@ -1,0 +1,38 @@
+<!doctype html><html><head><title>AIRES Hospital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="css/style.css"></head><body>
+<header><b>AIRES</b><span id="hn"></span><span id="conn" class="pill">CONNECTING</span></header>
+<div class="wrap"><div class="side">
+ <div class="card"><div class="k">Incoming ambulance</div><div class="big" id="amb"></div><div class="dim" id="crew"></div>
+  <div class="g2" style="margin-top:8px"><div><div class="k">Arrives in</div><div class="num" id="eta">-</div></div><div><div class="k">Expected at</div><div class="num" id="at">-</div></div></div></div>
+ <div id="alert" class="card alert ok"><div class="k">Incident impact</div><div class="big" id="atitle">NO INCIDENT</div><div id="adesc">Waiting for data...</div>
+  <div class="row"><b id="delay">+0 min delay</b></div><div id="rr" class="dim">-</div></div>
+ <div class="card" id="pt"></div>
+ <div class="card"><div class="k">Event log</div><ul id="log"></ul></div>
+</div><div id="map"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script><script src="js/common.js"></script>
+<script>
+$('hn').textContent = 'HOSPITAL · ' + SCN.hosp.name + ' · ' + SCN.hosp.dept + ' · ' + SCN.hosp.bay;
+$('amb').textContent = SCN.amb.id + ' · ' + SCN.amb.vehicle;
+$('crew').textContent = 'Driver ' + SCN.amb.driver + ' · ' + SCN.amb.crew + ' · ' + SCN.amb.type;
+$('pt').innerHTML = patientHTML();
+const draw = mkMap(), log = []; let last = '';
+live(d => {
+  draw(d); const ev = hasEv(d);
+  $('alert').className = 'card alert' + (ev ? '' : ' ok');
+  $('atitle').textContent = ev ? d.road_event.toUpperCase() + ' - AMBULANCE DELAYED' : 'NO INCIDENT';
+  $('adesc').textContent = d.event_description;
+  $('delay').textContent = '+' + (ev ? delayOf(d) : 0) + ' min delay' + (ev && d.rerouted ? ' (would be +' + noAiresDelay(d) + ' without rerouting)' : '');
+  $('hn').textContent = 'HOSPITAL · ' + (d.hospital || SCN.hosp.name) + ' · ' + SCN.hosp.dept + ' · ' + SCN.hosp.bay;
+  $('rr').textContent = (ev ? (d.rerouted ? 'Rerouted via: ' : 'Staying on: ') + d.recommended_route + ' · ' : '') + d.distance_km + ' km' + (ev ? ' (normal route ' + d.clear_km + ' km)' : ' to hospital');
+  $('eta').textContent = d.arrived ? 'ARRIVED' : d.new_eta + ' min';
+  $('at').textContent = new Date(Date.now() + d.new_eta * 60000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  const sig = d.road_event + '|' + d.recommended_route;
+  if (sig !== last) {
+    last = sig;
+    log.unshift(new Date().toLocaleTimeString() + ' - ' + (ev ? d.event_description + (d.rerouted ? ' Rerouted via ' + d.recommended_route + '.' : '') : 'Route clear.'));
+    $('log').innerHTML = log.slice(0, 6).map(x => '<li>' + x + '</li>').join('');
+  }
+});
+</script></body></html>

@@ -1,5 +1,5 @@
 from app.schemas.routing import RouteStatusResponse
-from app.services import graph_router
+from app.services import real_router as graph_router
 
 
 class RoutingService:
